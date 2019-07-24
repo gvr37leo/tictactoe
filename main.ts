@@ -59,7 +59,7 @@ var startstate = new TicTacToeState([
     ['','',''],
 ])
 
-minimax<TicTacToeState>(true,startstate, state => {
+minimax<TicTacToeState>(3,true,startstate, state => {
     var res:TicTacToeState[] = []
     
     new Vector(3,3).loop2d(v => {
@@ -84,22 +84,20 @@ minimax<TicTacToeState>(true,startstate, state => {
 })
 
 
-function minimax<T>(isMax:boolean,startstate:T, nextStateGenerator:(state:T) => T[], stateEvaluator:(state:T) => number){
-    var root = new TreeNode()
-    var nextstates = nextStateGenerator(startstate)
-    for(var state of nextstates){
-        var childnode = new TreeNode()
-        childnode.gamestate = state
-        childnode.isMax = !isMax
-        childnode.value = stateEvaluator(state)
-        root.children.push(childnode)
+function minimax<T>(depth,isMax:boolean,startstate:T, nextStateGenerator:(state:T) => T[], stateEvaluator:(state:T) => number):number{
+    if(depth == 0 || gameover){
+        stateEvaluator(state)
     }
+    var nextstates = nextStateGenerator(startstate)
 
+    if(isMax){
+
+    }else{
+        
+    }
+    for(var state of nextstates){
+        
+    }
+    return 0
 }
 
-class TreeNode<T>{
-    isMax:boolean
-    value:number
-    gamestate:T
-    children:TreeNode<T>[] = []
-}
