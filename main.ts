@@ -84,20 +84,27 @@ minimax<TicTacToeState>(3,true,startstate, state => {
 })
 
 
-function minimax<T>(depth,isMax:boolean,startstate:T, nextStateGenerator:(state:T) => T[], stateEvaluator:(state:T) => number):number{
+function minimax<T>(depth,isMax:boolean,state:T, nextStateGenerator:(state:T) => T[], stateEvaluator:(state:T) => number):TreeNode{
     if(depth == 0 || gameover){
-        stateEvaluator(state)
+
+        return new TreeNode(state,isMax,stateEvaluator(state))
     }
-    var nextstates = nextStateGenerator(startstate)
+    var nextstates = nextStateGenerator(state)
 
     if(isMax){
 
     }else{
-        
+
     }
     for(var state of nextstates){
         
     }
     return 0
+}
+
+class TreeNode<T>{
+    constructor(public state:T,public max:boolean,public value:number,){
+
+    }
 }
 
