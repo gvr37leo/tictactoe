@@ -1,102 +1,47 @@
 /// <reference path="node_modules/utilsx/utils.ts" />
 /// <reference path="node_modules/vectorx/vector.ts" />
 /// <reference path="projectutils.ts" />
-class TreeNode<T>{
-    parent:TreeNode<T>
-    bestchild:TreeNode<T>
-    children:TreeNode<T>[]
-    constructor(public state:T,public isMax:boolean,public value:number,){
-
-    }
-}
+/// <reference path="minimax.ts" />
 
 
-class TicTacToeState{
-    Xturn:boolean = true
-    constructor(public board:string[][]){
+var cells = document.querySelectorAll('.cell')
+var not = `
+    <circle cx="50%" cy="50%" r="50" stroke="black" stroke-width="10" fill="none" />
+`
+var cross = `
+    <line x1="20%" y1="20%" x2="80%" y2="80%" stroke="black" stroke-width="10" />
+    <line x1="20%" y1="80%" x2="80%" y2="20%" stroke="black" stroke-width="10" />
+`
+var empty = ''
 
-    }
-
-    c(){
-        var arrc = this.board.map(arr => arr.slice())
-
-        var c = new TicTacToeState(arrc)
-        c.Xturn = this.Xturn
-        return c
-    }
-
-    findWinner():string{
-        var east = new Vector(1,0)
-        var south = new Vector(0,1)
-        var checks = [
-            [new Vector(0,0),east],
-            [new Vector(0,1),east],
-            [new Vector(0,2),east],
-            [new Vector(0,0),south],
-            [new Vector(1,0),south],
-            [new Vector(2,0),south],
-            [new Vector(0,0),new Vector(1,1)],
-            [new Vector(0,2),new Vector(1,-1)],
-        ]
-        for(var check of checks){
-            var res = this.checkLine(check[0],check[1])
-            if(res != ''){
-                return res
-            }
-        }
-        return ''
-    }
-
-    checkLine(start:Vector,direction:Vector):string{
-        var current = start.c()
-        var contents = []
-        for(var i = 0; i < 3; i++){
-            contents.push(this.board[current.y][current.x])
-            current.add(direction)
-        }
-        if(contents.findIndex(v => v == '') == -1){
-            if(contents[0] == contents[1] && contents[1] == contents[2]){
-                return contents[0]
-            }
-        }
-        return ''
-    }
+cells.forEach((cell,i) => {
+    cell.addEventListener('click',e => {
+        console.log(i)
+    })
+})
 
 
-}
-
-function minimax<T>(depth,current:TreeNode<T>, nextStateGenerator:(state:T) => T[], stateEvaluator:(state:T) => number):TreeNode<T>{
-    var score = stateEvaluator(current.state)
-    if(depth == 0 || score != 0){
-        current.value = score
-        return current
-    }
-    var nextstates = nextStateGenerator(current.state)
-    if(nextstates.length == 0){
-        current.value = score
-        return current
-    }
-    var children = nextstates.map(ns => {
-        var node = new TreeNode(ns,!current.isMax,null)
-        node.parent = current
-        return node
-    }) 
-
-    children.forEach(childnode => minimax(depth - 1,childnode,nextStateGenerator,stateEvaluator))
-    var best = findbest(children,tn => current.isMax ? tn.value : -tn.value)//should also consider win in fewest moves
-    current.bestchild = best
-    current.value = best.value
-    current.children = children
-    return best
-}
-
+var xturn = true
 var startstate = new TicTacToeState([
-    ["X", "X", ""],
-    ["O", "", ""],
-    ["O", "", ""],
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""],
 ])
+startstate.Xturn = xturn
+var root = new TreeNode(startstate,xturn,0)
 
-var root = new TreeNode(startstate,true,0)
+function drawTicTacToeState(state:TicTacToeState){
+    new Vector(3,3).loop2d(v => {
+        var char = state.board[v.y][v.x]
+        if(char == 'X'){
+            cells[v.y * 3 + v.x].innerHTML = cross
+        }else if(char == 'O'){
+            cells[v.y * 3 + v.x].innerHTML = not
+        }else{
+            cells[v.y * 3 + v.x].innerHTML = empty
+        }
+    })
+}
 
 var result = minimax<TicTacToeState>(9,root, state => {
     var res:TicTacToeState[] = []
@@ -122,14 +67,6 @@ var result = minimax<TicTacToeState>(9,root, state => {
     }
 })
 
-function bestchildren<T>(root:TreeNode<T>){
-    var result = [root]
-    var current = root
-    while(current.bestchild != null){
-        result.push(current.bestchild)
-        current = current.bestchild
-    }
-    return result
-}
+drawTicTacToeState(last(bestchildren(result)).state)
 
-console.log(result)
+// console.log(bestchildrenstates(result))
